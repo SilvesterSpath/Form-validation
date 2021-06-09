@@ -4,40 +4,77 @@ const email = document.getElementById('email');
 const password = document.getElementById('password');
 const password2 = document.getElementById('password2');
 const button = document.getElementById('submit');
-//const formControl = document.querySelectorAll('.form-control');
-
-/* button.addEventListener('click', () => {
-  formControl.forEach((i) => {
-    i.classList.add('success');
-  });
-}); */
+const inputs = [username, email, password, password2];
 
 // Event listeners
 form.addEventListener('submit', (e) => {
   e.preventDefault();
-  if (username.value === '') {
-    showError(username, 'Username is required!');
+  checkRequired(inputs);
+  checkLength(username, 3, 15);
+  checkLength(password, 6, 15);
+  isValid(email);
+  checkMatch(password, password2);
+});
+
+// Check password match
+function checkMatch(input1, input2) {
+  if (input1.value !== input2.value) {
+    showError(input2, "Passwords doesn't match");
   } else {
-    showSuccess(username);
+    showSuccess(input2);
   }
-  if (email.value === '') {
-    showError(email, 'Email is required!');
-  } else if (!validateEmail(email.value)) {
+}
+
+// Check input length
+function checkLength(input, min, max) {
+  if (input.value.length === 0) {
+    return;
+  }
+  if (input.value.length < min) {
+    showError(
+      input,
+      `${getFieldName(input)} must be at least ${min} character!`
+    );
+  } else if (input.value.length > max) {
+    showError(
+      input,
+      `${getFieldName(input)} must be less than ${max} character!`
+    );
+  } else {
+    showSuccess(input);
+  }
+}
+
+// Check email valid
+function isValid(email) {
+  if (!validateEmail(email.value)) {
     showError(email, 'Email is not valid');
   } else {
     showSuccess(email);
   }
-  if (password.value === '') {
-    showError(password, 'Password is required!');
-  } else {
-    showSuccess(password);
-  }
-  if (password2.value === '') {
-    showError(password2, 'Confirm password!');
-  } else {
-    showSuccess(password2);
-  }
-});
+}
+
+// Check required fields
+function checkRequired(inputs) {
+  inputs.forEach((i) => {
+    if (i.value.trim() === '') {
+      console.log(i.id);
+      showError(i, `${getFieldName(i)} is required`);
+    } else {
+      showSuccess(i);
+    }
+  });
+}
+
+// Get fieldname with uppercase first char
+function getFieldName(input) {
+  const fieldName = input.id;
+  const nameCapitalized =
+    fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+  return nameCapitalized;
+}
+
+getFieldName(username);
 
 function showError(input, message) {
   const formControl = input.parentElement;
